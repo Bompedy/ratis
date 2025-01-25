@@ -87,7 +87,7 @@ public class SegmentedRaftLogOutputStream implements Closeable {
     final int serialized = entry.getSerializedSize();
     final int proto = CodedOutputStream.computeUInt32SizeNoTag(serialized) + serialized;
     final int total = proto + 4; // proto and 4-byte checksum
-    preallocateIfNecessary(total);
+//    preallocateIfNecessary(total);
 
     out.writeToBuffer(total, buf -> {
       final int pos = buf.position();
