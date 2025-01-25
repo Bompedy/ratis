@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test client" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.apache.ratis.examples.common.Runner" />
+    <module name="ratis-examples" />
+    <option name="PROGRAM_PARAMETERS" value="test testclient --size 1 --numFiles 100000 --numClients 1 --peers n0:127.0.0.1:6969" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ratis-examples/target" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
