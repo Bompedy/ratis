@@ -30,6 +30,11 @@ Another important goal is to support high throughput data ingest so that it can 
 * To build the artifacts, see [BUILDING.md](BUILDING.md).
 * To run the examples, see [ratis-examples/README.md](ratis-examples/README.md).
 
+# To run implemented tests
+* mvn clean package -DskipTests || use intellij run profile with class Runner.java
+* To run test client: java -jar ratis-examples-3.2.0-SNAPSHOT.jar test testclient --size 1 --numFiles 100000 --numClients 1 --peers n0:127.0.0.1:6969
+* To run test server: java -jar ratis-examples-3.2.0-SNAPSHOT.jar test testserver --id n0 --storage /tmp/ratis/n0 --peers n0:127.0.0.1:6969
+
 ## Reference
 1. Diego Ongaro and John Ousterhout,
 _[In Search of an Understandable Consensus Algorithm][Ongaro2014]_,
