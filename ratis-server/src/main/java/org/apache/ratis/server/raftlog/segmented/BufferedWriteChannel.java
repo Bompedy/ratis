@@ -135,7 +135,7 @@ class BufferedWriteChannel implements Closeable {
   void flush() throws IOException {
     flushBuffer();
     if (!forced) {
-      fileChannel.force(false);
+//      fileChannel.force(false);
       forced = true;
     }
   }

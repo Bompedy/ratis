@@ -360,12 +360,13 @@ class SegmentedRaftLogWorker {
   }
 
   private boolean shouldFlush() {
-    if (out == null) {
-      return false;
-    } else if (pendingFlushNum >= forceSyncNum) {
-      return true;
-    }
-    return pendingFlushNum > 0 && !(queue.peek() instanceof WriteLog);
+//    if (out == null) {
+//      return false;
+//    } else if (pendingFlushNum >= forceSyncNum) {
+//      return true;
+//    }
+//    return pendingFlushNum > 0 && !(queue.peek() instanceof WriteLog);
+    return true;
   }
 
   private void flushIfNecessary() throws IOException {
@@ -380,19 +381,27 @@ class SegmentedRaftLogWorker {
           stateMachineDataPolicy.getFromFuture(f, () -> this + "-flushStateMachineData");
         }
         flushBatchSize = (int)(lastWrittenIndex - flushIndex.get());
-        if (unsafeFlush) {
-          // unsafe-flush: call updateFlushedIndexIncreasingly() without waiting the underlying FileChannel.force(..).
-          unsafeFlushOutStream();
-          updateFlushedIndexIncreasingly();
-        } else if (asyncFlush) {
-          asyncFlushOutStream(f);
-        } else {
-          flushOutStream();
-          if (!stateMachineDataPolicy.isSync()) {
-            IOUtils.getFromFuture(f, () -> this + "-flushStateMachineData");
-          }
-          updateFlushedIndexIncreasingly();
+
+        // plan on using batching here
+        flushOutStream();
+        if (!stateMachineDataPolicy.isSync()) {
+          IOUtils.getFromFuture(f, () -> this + "-flushStateMachineData");
         }
+        updateFlushedIndexIncreasingly();
+//
+//        if (unsafeFlush) {
+//          // unsafe-flush: call updateFlushedIndexIncreasingly() without waiting the underlying FileChannel.force(..).
+//          unsafeFlushOutStream();
+//          updateFlushedIndexIncreasingly();
+//        } else if (asyncFlush) {
+//          asyncFlushOutStream(f);
+//        } else {
+//          flushOutStream();
+//          if (!stateMachineDataPolicy.isSync()) {
+//            IOUtils.getFromFuture(f, () -> this + "-flushStateMachineData");
+//          }
+//          updateFlushedIndexIncreasingly();
+//        }
       }
     }
   }
