@@ -18,10 +18,7 @@
 package org.apache.ratis.netty;
 
 import org.apache.ratis.thirdparty.io.netty.bootstrap.Bootstrap;
-import org.apache.ratis.thirdparty.io.netty.channel.Channel;
-import org.apache.ratis.thirdparty.io.netty.channel.ChannelFuture;
-import org.apache.ratis.thirdparty.io.netty.channel.ChannelInitializer;
-import org.apache.ratis.thirdparty.io.netty.channel.EventLoopGroup;
+import org.apache.ratis.thirdparty.io.netty.channel.*;
 import org.apache.ratis.thirdparty.io.netty.channel.socket.SocketChannel;
 import org.apache.ratis.thirdparty.io.netty.handler.logging.LogLevel;
 import org.apache.ratis.thirdparty.io.netty.handler.logging.LoggingHandler;
@@ -50,6 +47,7 @@ public class NettyClient implements Closeable {
     lifeCycle.startAndTransition(
         () -> channel = new Bootstrap()
             .group(group)
+            .option(ChannelOption.TCP_NODELAY, true)
             .channel(NettyUtils.getSocketChannelClass(group))
             .handler(new LoggingHandler(LogLevel.INFO))
             .handler(initializer)
