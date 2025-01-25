@@ -50,6 +50,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.Objects;
 
@@ -87,12 +89,18 @@ public final class NettyRpcService extends RaftServerRpcWithProxy<NettyRpcProxy,
   private final MemoizedSupplier<ChannelFuture> channel;
   private final InetSocketAddress socketAddress;
 
+  private final ExecutorService requestExecutor = Executors.newFixedThreadPool(1);
+
   @ChannelHandler.Sharable
   class InboundHandler extends SimpleChannelInboundHandler<RaftNettyServerRequestProto> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RaftNettyServerRequestProto proto) {
-      final RaftNettyServerReplyProto reply = handle(proto);
-      ctx.writeAndFlush(reply);
+      requestExecutor.submit(() -> {
+        final RaftNettyServerReplyProto reply = handle(proto);
+        ctx.channel().eventLoop().submit(() -> {
+          ctx.writeAndFlush(reply);
+        });
+      });
     }
   }
 
