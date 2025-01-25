@@ -39,8 +39,6 @@ public class TestClient extends SubCommandBase {
         System.out.println("Running client!!!");
         final RaftProperties properties = new RaftProperties();
         RaftConfigKeys.Rpc.setType(properties, SupportedRpcType.NETTY);
-        // change to true if on linux
-        NettyConfigKeys.Client.setUseEpoll(properties, false);
 
         final List<RaftClient> clients = new ArrayList<>();
         for (int i = 0; i < numClients; i++) {
