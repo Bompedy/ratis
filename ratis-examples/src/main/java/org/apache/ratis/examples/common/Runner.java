@@ -21,9 +21,14 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import org.apache.ratis.examples.arithmetic.cli.Arithmetic;
 import org.apache.ratis.examples.filestore.cli.FileStore;
+import org.apache.ratis.examples.tests.TestClient;
+import org.apache.ratis.examples.tests.TestServer;
 import org.apache.ratis.util.JavaUtils;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,11 +40,34 @@ public final class Runner {
 
   }
 
+  public static boolean deleteDirectory(File dir) {
+    if (dir.isDirectory()) {
+      final String[] files = dir.list();
+      if (files != null) {
+        for (String name : files) {
+          deleteDirectory(new File(dir, name));
+        }
+      }
+    }
+    return dir.delete();
+  }
+
+
   public static void main(String[] args) throws Exception {
     if (args.length == 0) {
       System.err.println("No command type specified: ");
       return;
     }
+
+    if (args.length > 2) {
+      if (args[1].contains("server")) {
+        deleteDirectory(new File("/tmp/ratis/n0"));
+        deleteDirectory(new File("/tmp/raft-server"));
+      } else {
+        deleteDirectory(new File("/tmp/ratis/loadgen"));
+      }
+    }
+
     List<SubCommandBase> commands = initializeCommands(args[0]);
     Runner runner = new Runner();
 
@@ -76,6 +104,11 @@ public final class Runner {
       return FileStore.getSubCommands();
     } else if (command.equalsIgnoreCase(JavaUtils.getClassSimpleName(Arithmetic.class))) {
       return Arithmetic.getSubCommands();
+    } else if (command.equalsIgnoreCase("test")) {
+      List<SubCommandBase> commands = new ArrayList<>();
+      commands.add(new TestServer());
+      commands.add(new TestClient());
+      return commands;
     }
     return null;
   }
